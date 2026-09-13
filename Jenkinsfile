@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
            steps {
-              sh 'javac src/Hello.java'
+              sh 'docker build -t devops-demo-app:1.0 .'
            }
        }
 
-        stage('Test') {
+        stage('Run Docker Container') {
            steps {
-              sh 'java -cp src Hello'
+              sh 'docker run --rm devops-demo-app:1.0'
            }
        }
     }
