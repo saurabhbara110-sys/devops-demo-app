@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'devops-demo-app'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+       }
+
     stages {
         stage('Workspace Cleanup') {
            steps {
@@ -24,13 +29,13 @@ pipeline {
        }
         stage('Build Docker Image') {
            steps {
-              sh 'docker build -t devops-demo-app:1.0 .'
+              sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
            }
        }
 
         stage('Run Docker Container') {
            steps {
-              sh 'docker run --rm devops-demo-app:1.0'
+              sh 'docker run --rm ${IMAGE_NAME}:${IMAGE_TAG}'
            }
        }
     }
