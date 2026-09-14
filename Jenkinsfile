@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'devops-demo-app'
+        DOCKERHUB_REPO = 'saurabhbara110/devops-demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
        }
 
@@ -29,14 +29,29 @@ pipeline {
        }
         stage('Build Docker Image') {
            steps {
-              sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+              sh 'docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} .'
            }
        }
 
         stage('Run Docker Container') {
            steps {
-              sh 'docker run --rm ${IMAGE_NAME}:${IMAGE_TAG}'
+              sh 'docker run --rm ${DOCKERHUB_REPO}:${IMAGE_TAG}'
            }
+       }
+        stage('Push Docker Image') {
+           steps {
+              withCredentials([usernamePassword(
+                  credentialsId : 'dockerhub-credentials',
+                  usernameVariable : 'DOCKERHUB_USER',
+                  passwordVariable : 'DOCKERHUB_TOKEN'
+              )]) {
+                  sh '''
+                      echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                      docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}
+                      docker logout
+                  '''
+             }
+          }
        }
     }
 }
