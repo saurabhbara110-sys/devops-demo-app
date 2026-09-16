@@ -19,12 +19,11 @@ pipeline {
        }
         stage('SonarQube Scan') {
            steps {
-              withSonarQubeEnv('sonarqube') {
-                  sh '''
-                     sonar-scanner \
-                     -Dsonar.projectKey=devops-demo-app \
-                     -Dsonar.sources=src
-               '''
+             script {
+                def scannerHome = tool 'sonar-scanner'
+                withSonarQubeEnv('sonarqube') {
+                  sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=devops-demo-app -Dsonar.sources=src"
+                 }
               }
            }
        }
