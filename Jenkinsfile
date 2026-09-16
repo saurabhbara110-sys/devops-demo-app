@@ -17,6 +17,17 @@ pipeline {
               checkout scm
            }
        }
+        stage('SonarQube Scan') {
+           steps {
+              withSonarQubeEnv('sonarqube') {
+                  sh '''
+                     sonar-scanner \
+                     -Dsonar.projectKey=devops-demo-app \
+                     -Dsonar.sources=src
+               '''
+              }
+           }
+       }
         stage('Compile') {
            steps {
               sh 'javac src/Hello.java'
